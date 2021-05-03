@@ -19,21 +19,19 @@ Goals:
 
 Check the wiki: https://github.com/weeb-poly/miso/wiki#how-to-contribute 
 
-## requirements:
-node.js packages *https* and *fs*. these should come standard for most versions of node.
-Also requires puppeteer, you will have to download this from npm:
+## Requirements:
 
 ```bash
-npm i puppeteer
-# or "yarn add puppeteer"
+npm install
+# or "yarn install"
 ```
 
 ## How to run
 
-- Make sure you have the right npm libraries, at the moment, they are https, fs, and puppeteer. Puppeteer is the only one not included by default. Afterwards, run `node <file name>` to test it out. At the moment, this should be enough, as the CLI isnt complete yet, and this should be sufficient for testing files.
+- Make sure you have the right npm libraries, at the moment, they are https, fs, and puppeteer. Afterwards, run `node <file name>` to test it out. At the moment, this should be enough, as the CLI isnt complete yet, and this should be sufficient for testing files.
 
 
 ## Dev log
-dev log is located in the [wiki](https://github.com/weeb-poly/miso/wiki/Weekly_Log)
+Dev log is located in the [wiki](https://github.com/weeb-poly/miso/wiki/Weekly_Log)
 
 <img src="miso-all.png" alt="alt text" width="400" />

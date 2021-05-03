@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/weeb-poly/sauce-dl/issues"
   },
-  "homepage": "https://github.com/weeb-poly/sauce-dl#readme"
+  "homepage": "https://github.com/weeb-poly/sauce-dl#readme",
+  "dependencies": {
+    "puppeteer": "^9.1.0"
+  }
 }
