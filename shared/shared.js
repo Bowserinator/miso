@@ -1,70 +1,55 @@
-/** shared functions for all files**/
+/** Shared functions for all files**/
 
-// includes
 const https = require('https')
 const puppeteer = require('puppeteer-core');
-fs = require('fs')
 
+const MersenneTwister = require('mersenne-twister');
+const generator = new MersenneTwister();
 
-/*
--- NOTE: JS has no random seed function, so I had to write my own
---       the Von Neumann method does have flaws, but it was quick to implement
-input: integer
-output: integer that is at maximum, the same length
-Purpose: give it one manga number, and it gives you a random one. Is pseudo-random
-Usage: seededRandom(11111) -> 2343
-*/
+const fs = require('fs');
+
+/**
+ * Get a seeded random number
+ * @param {Number} number Integer to seed
+ * @returns Random integer on [0,0xffffffff]-interval *
+ */
 function seededRandom(number){
-	// runs the von neumann method
-	let tempRand = number ** 2;
-	let temp = tempRand.toString();
-	// this makes sure the square is the same length as the number you want to generate
-	while((temp.length - number.toString().length) % 2 === 1) temp = "0" + temp;
-	let removeChar = (temp.length - number.toString().length) / 2;
-	return parseInt(temp.substring(removeChar, temp.length - removeChar));
+	generator.init_seed(number);
+	return generator.random_int();
 }
 
-/*
--- NOTE: This does not check if the URL you are giving it is an image. use carefully
-input: url (string), image name (string)
-output: no return type (downloads image specified)
-purpose:
-usage:
-*/
-function download(url, imagename){
-	https.get(url, (resp) => {
-		let data = '';
-		resp.setEncoding('binary');
-		resp.on('data', (chunk) => {
-			data += chunk;
-		});
-		resp.on('end', () => {
-			fs.writeFile(imagename, data, 'binary', (err) => {
-            if (err) throw err;
-            console.log('File saved.');
-      });
-		});
-
+/**
+ * Download a file from a url
+ * @param {String} url URL to file to download
+ * @param {String} dest Local file destination w/ name 
+ */
+function download(url, dest){
+	let file = fs.createWriteStream(dest);
+	http.get(url, res => {
+		res.pipe(file);
+		file.on('finish', file.close);
+	}).on('error', err => {
+		fs.unlink(dest); // Delete file on failure
 	});
 }
 
-/*
--- NOTE: untested, still need to test
--- 			 ment to be a general purpose API get function
--- 			 mostly just Mangadex and XKCD
-*/
+/**
+ * Read data from a JSON API end point
+ * @param {String} apiendpoint URL to API end point
+ * @param {Function} callback Callback, json data will be passed to it
+ */
 async function getFromAPI(apiendpoint, callback){
-	await https.get(apiendpoint, (resp) => {
+	await https.get(apiendpoint, res => {
 		let data = '';
-		resp.on("data", (chunk) =>{
-			data += chunk;
-		});
-		resp.on("end", () => {
-				let jsonData = JSON.parse(data);
-				callback(jsonData);
+		res.on('data', chunk => { data += chunk; });
+		res.on('end', () => {
+			let jsonData = JSON.parse(data);
+			callback(jsonData);
 		});
 
-		resp.on("error", (err) => {
+		res.on('error', err => {
+			// TODO: replace w/ logger
+			// callback should also be called to indicate an error occured
 			console.log("Error: " + err.message);
 		});
 	});
@@ -75,7 +60,7 @@ async function getFromAPI(apiendpoint, callback){
 -- 			 start of scraping with puppeteer
 */
 
-async function pageEval(url, pageScript , callback){
+async function pageEval(url, pageScript, callback){
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
 	await page.goto(url);
@@ -95,4 +80,17 @@ async function grabHTML(url, callback){
 	await searchPageFor(url, "*", callback);
 }
 
-module.exports = { seededRandom, download, getFromAPI, pageEval };
+
+module.exports = {
+    /**
+     * Assert the true-ness of a condition
+     * @param {String} condition Condition to check for true-ness
+     * @param {String} errorMsg Error message to display on fail, defaults to 'Assert failed'
+     */
+    assert: (condition, errorMsg) => { if (!condition) throw new Error(errorMsg || 'Assert failed'); },
+
+	seededRandom,
+	download,
+	getFromAPI,
+	pageEval
+};

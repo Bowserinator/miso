@@ -1,4 +1,5 @@
 /* Download options */
+const util = require('../shared.js');
 
 /**
  * Options for downloading

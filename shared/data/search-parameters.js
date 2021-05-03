@@ -1,6 +1,6 @@
 /** Shared method of passing search parameters */
 
-const util = require('../util.js');
+const util = require('../shared.js');
 
 /**
  * Unified search parameters
