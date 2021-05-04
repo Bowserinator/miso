@@ -1,3 +1,6 @@
+# Puppeteer tmp folder
+tmp
+
 # Logs
 logs
 *.log

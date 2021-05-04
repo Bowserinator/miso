@@ -1,5 +1,6 @@
 // https://www.cocomanhua.com/
 const common = require('../shared/shared.js');
+const path = require('path');
 
 /**
  * CocoManhua ids follow this format: https://www.cocomanhua.com/[manhuaID]/[magic number]/[chapter].html
@@ -22,7 +23,19 @@ function download(manhuaId, chapter, magicNumber=1, directory='./') {
                 url: img.getElementsByTagName('img')[0].src
             };
         });
-        console.log(images);
+        return images;
+    },
+    data => {
+        for (let d of data)
+            common.download(d.url, path.join(directory, d.page + '.png'));
+    },
+    {
+        headless: false,
+        delay: 5000,           // Images take some time to render (loaded from js?)
+        autoscroll: true,      // Images won't be loaded until scrolled to, so scroll all the way down
+        autoscrollTimeout: -1, // Not an infinite scrolling page
+        autoscrollDelay: 100,
+        autoscrollBy: 200
     });
 }
 
